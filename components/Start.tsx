@@ -18,7 +18,7 @@ const buttonStyle = {
 export default function Start() {
   return (
     <section>
-      <div className="start-section" style={{ backgroundColor: '#224CCA', padding: '1.75rem 3rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '0rem' }}>
+      <div className="start-section" style={{ backgroundColor: '#224CCA', padding: '1.75rem 3rem 5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '0rem' }}>
         <h2 className="start-title" style={{ color: 'white', fontSize: '5rem', textAlign: 'center', margin: 0, marginBottom: '0.25rem', letterSpacing: '0.15rem' }}>JUMPSTART NOW!</h2>
         <div className="start-button-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
           <Image src="/assets/explanation-diamond.svg" alt="Diamond" width={145} height={132} className="header-character hide-mobile" />

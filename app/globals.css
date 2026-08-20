@@ -331,7 +331,7 @@ h1, h2, h3, h4, h5, h6, p {
 
   /* --- start + footer --- */
   .start-section {
-    padding: 1.5rem 1rem !important;
+    padding: 1.5rem 1rem 3rem !important;
   }
 
   .start-title {
