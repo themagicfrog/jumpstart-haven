@@ -3,60 +3,61 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 
+interface DropdownLink {
+  label: string;
+  href: string;
+}
+
+type StepAction =
+  | { kind: 'link'; label: string; href: string }
+  | { kind: 'dropdown'; label: string; links: DropdownLink[] };
+
 interface Step {
   title: string;
   description: string;
+  action: StepAction;
 }
 
-interface Section {
-  title: string;
-  steps: Step[];
-}
-
-const beginnerSection: Section = {
-  title: 'NEVER MADE A GAME BEFORE?',
-  steps: [
-    {
-      title: 'BUILD',
-      description: 'Use our resources to make your own 2D platformer game.',
+const steps: Step[] = [
+  {
+    title: 'BUILD',
+    description: 'Use our beginner resources to build your own 2D platformer game in about 1 hour.',
+    action: {
+      kind: 'dropdown',
+      label: 'RESOURCES',
+      links: [
+        { label: 'Written Guide', href: 'https://jams.hackclub.com/jam/godot-platformer' },
+        { label: 'Video Tutorial', href: 'https://www.youtube.com/watch?v=G7iZHazD4wo' },
+        { label: 'Slideshow Presentation', href: 'https://www.figma.com/slides/j0xld5JL1PLVmndZPV6YSi/Godot-Platformer-Guide--Jumpstart-?node-id=1-42&t=YvoFRsTHrLei0iRJ-1' },
+      ],
     },
-    {
-      title: 'SHIP',
-      description: 'Upload your game to Itch.io and Github, then submit to the form.',
+  },
+  {
+    title: 'SHIP',
+    description: 'Upload your game to Itch.io, finish your GitHub repo, then submit to our form.',
+    action: {
+      kind: 'link',
+      label: 'FORM',
+      href: 'https://forms.hackclub.com/jumpstart-beginner',
     },
-    {
-      title: 'EARN',
-      description: 'Once your game is reviewed, earn a $10 grant to buy a game to play. Enjoy!',
+  },
+  {
+    title: 'RUN',
+    description: 'Once approved after about a week, you will run your Haven event! Have fun!!',
+    action: {
+      kind: 'dropdown',
+      label: 'DETAILS',
+      links: [
+        { label: 'Details in Slack', href: 'https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A60JA00KD' },
+      ],
     },
-  ],
-};
-
-const experiencedSection: Section = {
-  title: 'HAVE SOME EXPERIENCE?',
-  steps: [
-    {
-      title: 'BUILD',
-      description: 'Go wild with building any game! Devlog in Slack, use Hackatime and Lapse, and push to Github.',
-    },
-    {
-      title: 'PLAY',
-      description: 'Participate in challenges, huddles, workshops, and showcases on Slack.',
-    },
-    {
-      title: 'SHIP',
-      description: 'Upload to Itch.io, record a gameplay video, ship in Slack, then submit to the form.',
-    },
-    {
-      title: 'EARN',
-      description: 'Earn a grant to buy prizes (ex. game consoles, Steam credit, an arcade kit)',
-    },
-  ],
-};
+  },
+];
 
 const games = [
   {
     title: 'Infinity Lost',
-    image: '/assets/infinitylost.gif',
+    image: '/assets/infinitylost.png',
     alt: 'Infinity Lost',
     creator: 'Violet, 16 years old, USA',
     description: 'Lost in an infinitely looping space shuttle, you have to escape your unfortunate circumstance',
@@ -88,7 +89,7 @@ const games = [
   },
   {
     title: 'Okrim',
-    image: '/assets/okrim.gif',
+    image: '/assets/okrim.png',
     alt: 'Okrim',
     creator: 'Ernests, 17 years old, Latvia',
     description: 'A point and click psychological horror game, you are ghost going through daily routine to break free',
@@ -104,29 +105,29 @@ const games = [
   }
 ];
 
-interface DecorationImage {
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-  position: { bottom: string; left?: string; right?: string };
-  zIndex?: number;
-}
+const stepButtonStyle = {
+  backgroundColor: '#EE00A7',
+  color: 'white',
+  padding: '0.75rem 1.5rem',
+  borderRadius: '0.5rem',
+  fontSize: '1.8rem',
+  fontWeight: 'bold' as const,
+  border: 'none',
+  cursor: 'pointer',
+  boxShadow: '-4px 4px 0 #930B6A',
+  transition: 'transform 0.2s ease',
+  zIndex: 10000,
+  alignItems: 'center',
+  justifyContent: 'center',
+  textDecoration: 'none' as const,
+  minHeight: '44px',
+  minWidth: '44px'
+};
 
-interface StepColumnProps {
-  step: Step;
-  index: number;
-  isBeginner: boolean;
-  decorations?: DecorationImage[];
-  rectangleWidth: number;
-}
-
-const StepColumn = ({ step, index, isBeginner, decorations = [], rectangleWidth }: StepColumnProps) => {
+const StepColumn = ({ step, index }: { step: Step; index: number }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const titleImageSrc = isBeginner 
-    ? `/assets/explanation-title${index + 1}.svg`
-    : `/assets/exxplanation-title${index + 1}-2.svg`;
+  const titleImageSrc = `/assets/explanation-title${index + 1}.svg`;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -147,121 +148,70 @@ const StepColumn = ({ step, index, isBeginner, decorations = [], rectangleWidth 
     };
   }, [isDropdownOpen]);
 
-  const columnZIndex = !isBeginner && (step.title === 'BUILD' || step.title === 'SHIP') ? 20 : ((isBeginner && step.title === 'BUILD' && isDropdownOpen) || (!isBeginner && (step.title === 'BUILD' || step.title === 'PLAY') && isDropdownOpen) ? 10002 : 'auto');
-  
   return (
-    <div className="step-column" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: columnZIndex }}>
+    <div className="step-column" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: isDropdownOpen ? 10002 : 'auto' }}>
       <div style={{ position: 'relative', zIndex: 20 }}>
         <Image
           src={titleImageSrc}
-          alt={`Title ${index + 1}`}
+          alt={`Step ${index + 1}`}
           width={400}
-          height={120}
+          height={121}
           className="step-title-image"
         />
         <div className="step-title-text-wrapper" style={{ position: 'absolute', top: '50%', left: '35%', transform: 'translateY(-50%)', textAlign: 'left', zIndex: 21, pointerEvents: 'none' }}>
           <span className="step-title-text" style={{ fontSize: '3.5rem', color: '#EE0073', fontWeight: 'bold', letterSpacing: '0.5rem' }}>{step.title}</span>
         </div>
       </div>
-      <div className="step-rectangle" style={{ backgroundColor: '#101E45', borderRadius: '1rem', width: `${rectangleWidth}px`, minHeight: '300px', marginTop: '-2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '4rem 1rem 1rem 1rem', position: 'relative', zIndex: 1 }}>
-        {decorations.map((decoration, i) => (
-          <Image
-            key={i}
-            src={decoration.src}
-            alt={decoration.alt}
-            width={decoration.width}
-            height={decoration.height}
-            className="step-decoration-image"
-            style={{ position: 'absolute', ...decoration.position, zIndex: decoration.zIndex || 10 }}
-          />
-        ))}
-        <p className="step-rectangle-text" style={{ color: 'white', textAlign: 'center', margin: 0, fontSize: '2rem', lineHeight: '1.2', marginBottom: (step.title === 'BUILD' && isBeginner) || (step.title === 'SHIP' && isBeginner) || (step.title === 'BUILD' && !isBeginner) || (step.title === 'PLAY' && !isBeginner) || (step.title === 'SHIP' && !isBeginner) ? '0.5rem' : '0' }}>{step.description}</p>
-        {step.title === 'SHIP' && isBeginner && (
+
+      <div className="step-rectangle" style={{ backgroundColor: '#101E45', borderRadius: '1rem', width: '360px', minHeight: '240px', flexGrow: 1, marginTop: '-2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '4rem 1rem 1.5rem 1rem', position: 'relative', zIndex: 1 }}>
+        <p className="step-rectangle-text" style={{ color: 'white', textAlign: 'center', margin: 0, fontSize: '2rem', lineHeight: '1.2', marginBottom: '1rem' }}>
+          {step.description}
+        </p>
+
+        {step.action.kind === 'link' && (
           <a
-            href="https://forms.hackclub.com/jumpstart-beginner"
+            href={step.action.href}
             target="_blank"
             rel="noopener noreferrer"
             className="form-button"
-            style={{
-              backgroundColor: '#EE00A7',
-              color: 'white',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '0.5rem',
-              fontSize: '1.8rem',
-              fontWeight: 'bold',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '-4px 4px 0 #930B6A',
-              transition: 'transform 0.2s ease',
-              zIndex: 10000,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '0.5rem',
-              textDecoration: 'none',
-              minHeight: '44px',
-              minWidth: '44px'
-            }}
+            style={{ ...stepButtonStyle, display: 'inline-flex', marginTop: 'auto' }}
             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
             onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           >
-            FORM
+            {step.action.label}
           </a>
         )}
-        {step.title === 'BUILD' && isBeginner && (
-          <div 
+
+        {step.action.kind === 'dropdown' && (
+          <div
             ref={dropdownRef}
-            style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.5rem', zIndex: 10000 }}
+            style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'auto', zIndex: 10000 }}
             onMouseEnter={() => setIsDropdownOpen(true)}
             onMouseLeave={() => setIsDropdownOpen(false)}
           >
             <button
               className="details-dropdown-button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              style={{
-                backgroundColor: '#EE00A7',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '0.5rem',
-                fontSize: '1.8rem',
-                fontWeight: 'bold',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '-4px 4px 0 #930B6A',
-                transition: 'transform 0.2s ease',
-                zIndex: 10000,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                minHeight: '44px',
-                minWidth: '44px'
-              }}
+              style={{ ...stepButtonStyle, display: 'flex', gap: '0.5rem' }}
               onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
               onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              RESOURCES
-              <Image 
-                src="/assets/triangle.svg" 
-                alt="Dropdown" 
-                width={16} 
-                height={16} 
-                style={{ 
+              <Image
+                src="/assets/triangle.svg"
+                alt="Dropdown"
+                width={16}
+                height={12}
+                style={{
                   transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                   transition: 'transform 0.2s ease'
-                }} 
+                }}
               />
+              {step.action.label}
             </button>
             {isDropdownOpen && (
               <>
-                <div 
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    height: '12rem',
-                    zIndex: 10000
-                  }}
+                <div
+                  style={{ position: 'absolute', top: '100%', left: 0, right: 0, height: '12rem', zIndex: 10000 }}
                   onMouseEnter={() => setIsDropdownOpen(true)}
                 />
                 <div className="details-dropdown-content" style={{
@@ -280,318 +230,78 @@ const StepColumn = ({ step, index, isBeginner, decorations = [], rectangleWidth 
                   gap: '0.75rem',
                   pointerEvents: 'auto'
                 }}>
-                <a 
-                  href="https://jams.hackclub.com/jam/godot-platformer" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ color: '#EE00A7', textDecoration: 'underline', fontWeight: 'bold', fontSize: '1.6rem', lineHeight: '1.4', padding: '0.5rem', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  Written Guide
-                </a>
-                <a 
-                  href="https://www.youtube.com/watch?v=G7iZHazD4wo" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ color: '#EE00A7', textDecoration: 'underline', fontWeight: 'bold', fontSize: '1.6rem', lineHeight: '1.4', padding: '0.5rem', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  Video Tutorial
-                </a>
-                <a 
-                  href="https://www.figma.com/slides/j0xld5JL1PLVmndZPV6YSi/Godot-Platformer-Guide--Jumpstart-?node-id=1-42&t=YvoFRsTHrLei0iRJ-1" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ color: '#EE00A7', textDecoration: 'underline', fontWeight: 'bold', fontSize: '1.6rem', lineHeight: '1.4', padding: '0.5rem', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  Slideshow Presentation
-                </a>
-              </div>
-              </>
-            )}
-          </div>
-        )}
-        {step.title === 'BUILD' && !isBeginner && (
-          <div 
-            ref={dropdownRef}
-            style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.5rem', zIndex: 10000 }}
-            onMouseEnter={() => setIsDropdownOpen(true)}
-            onMouseLeave={() => setIsDropdownOpen(false)}
-          >
-            <button
-              className="details-dropdown-button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              style={{
-                backgroundColor: '#EE00A7',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '0.5rem',
-                fontSize: '1.8rem',
-                fontWeight: 'bold',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '-4px 4px 0 #930B6A',
-                transition: 'transform 0.2s ease',
-                zIndex: 10000,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                minHeight: '44px',
-                minWidth: '44px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              DETAILS
-              <Image 
-                src="/assets/triangle.svg" 
-                alt="Dropdown" 
-                width={16} 
-                height={16} 
-                style={{ 
-                  transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.2s ease'
-                }} 
-              />
-            </button>
-            {isDropdownOpen && (
-              <>
-                <div 
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    height: '6rem',
-                    zIndex: 10000
-                  }}
-                  onMouseEnter={() => setIsDropdownOpen(true)}
-                />
-                <div className="details-dropdown-content" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  marginTop: '0.25rem',
-                  backgroundColor: 'white',
-                  borderRadius: '0.5rem',
-                  padding: '1rem',
-                  width: '100%',
-                  textAlign: 'center',
-                  zIndex: 10001,
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-                  pointerEvents: 'auto'
-                }}>
-                  <p style={{ color: '#142B70', fontSize: '1.6rem', margin: 0, lineHeight: '1.4', padding: '0.5rem' }}>
-                    Instructions in Slack{' '}
-                    <a 
-                      href="https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A6MFGFW56" 
-                      target="_blank" 
+                  {step.action.links.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: '#EE00A7', textDecoration: 'underline', fontWeight: 'bold', padding: '0.25rem', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}
+                      style={{ color: '#EE00A7', textDecoration: 'underline', fontWeight: 'bold', fontSize: '1.6rem', lineHeight: '1.4', padding: '0.5rem', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
-                      here
+                      {link.label}
                     </a>
-                  </p>
+                  ))}
                 </div>
               </>
             )}
           </div>
-        )}
-        {step.title === 'PLAY' && !isBeginner && (
-          <div 
-            ref={dropdownRef}
-            style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.5rem', zIndex: 10000 }}
-            onMouseEnter={() => setIsDropdownOpen(true)}
-            onMouseLeave={() => setIsDropdownOpen(false)}
-          >
-            <button
-              className="details-dropdown-button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              style={{
-                backgroundColor: '#EE00A7',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '0.5rem',
-                fontSize: '1.8rem',
-                fontWeight: 'bold',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '-4px 4px 0 #930B6A',
-                transition: 'transform 0.2s ease',
-                zIndex: 10000,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                minHeight: '44px',
-                minWidth: '44px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              DETAILS
-              <Image 
-                src="/assets/triangle.svg" 
-                alt="Dropdown" 
-                width={16} 
-                height={16} 
-                style={{ 
-                  transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.2s ease'
-                }} 
-              />
-            </button>
-            {isDropdownOpen && (
-              <>
-                <div 
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    height: '6rem',
-                    zIndex: 10000
-                  }}
-                  onMouseEnter={() => setIsDropdownOpen(true)}
-                />
-                <div className="details-dropdown-content" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  marginTop: '0.25rem',
-                  backgroundColor: 'white',
-                  borderRadius: '0.5rem',
-                  padding: '1rem',
-                  width: '100%',
-                  textAlign: 'center',
-                  zIndex: 10001,
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-                  pointerEvents: 'auto'
-                }}>
-                  <p style={{ color: '#142B70', fontSize: '1.6rem', margin: 0, lineHeight: '1.4', padding: '0.5rem' }}>
-                    Details in Slack{' '}
-                    <a 
-                      href="https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A60JA00KD" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      style={{ color: '#EE00A7', textDecoration: 'underline', fontWeight: 'bold', padding: '0.25rem', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}
-                    >
-                      here
-                    </a>
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-        {step.title === 'SHIP' && !isBeginner && (
-          <a
-            href="https://submit.hackclub.com/jumpstart"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="form-button"
-            style={{
-              backgroundColor: '#EE00A7',
-              color: 'white',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '0.5rem',
-              fontSize: '1.8rem',
-              fontWeight: 'bold',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '-4px 4px 0 #930B6A',
-              transition: 'transform 0.2s ease',
-              zIndex: 10000,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '0.5rem',
-              textDecoration: 'none',
-              minHeight: '44px',
-              minWidth: '44px'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            FORM
-          </a>
         )}
       </div>
-      {step.title === 'BUILD' && !isBeginner && (
-        <Image
-          src="/assets/zorp.svg"
-          alt="Zorp"
-          width={180}
-          height={180}
-          className="step-decoration-image mobile-experience-image"
-          style={{ position: 'absolute', bottom: '-4rem', right: '-7rem', zIndex: 300, pointerEvents: 'none' }}
-        />
-      )}
-      {step.title === 'SHIP' && !isBeginner && (
-        <Image
-          src="/assets/explanation-heidi.svg"
-          alt="Heidi"
-          width={180}
-          height={180}
-          className="step-decoration-image mobile-experience-image"
-          style={{ position: 'absolute', bottom: '-4rem', right: '-8rem', zIndex: 300, pointerEvents: 'none' }}
-        />
-      )}
     </div>
   );
-};
-
-const beginnerDecorations: Record<string, DecorationImage[]> = {
-  BUILD: [
-    { src: '/assets/explanation-godorpheus.svg', alt: 'Godorpheus', width: 150, height: 150, position: { bottom: '-1.5rem', left: '-6rem' } },
-    { src: '/assets/explanation-heidi.svg', alt: 'Heidi', width: 150, height: 150, position: { bottom: '-2rem', right: '-4.5rem' } }
-  ],
-  SHIP: [
-    { src: '/assets/explanation-console.svg', alt: 'Console', width: 240, height: 240, position: { bottom: '-8rem', left: '-5rem' } },
-    { src: '/assets/explanation-orpheus.svg', alt: 'Orpheus', width: 220, height: 220, position: { bottom: '-6rem', right: '-5rem' } }
-  ],
-  EARN: [
-    { src: '/assets/explanation-tamagotchi.svg', alt: 'Tamagotchi', width: 190, height: 190, position: { bottom: '-3.5rem', left: '-4rem' } },
-    { src: '/assets/explanation-trophy.svg', alt: 'Trophy', width: 190, height: 190, position: { bottom: '-3.5rem', right: '-5rem' } }
-  ]
-};
-
-const experiencedDecorations: Record<string, DecorationImage[]> = {
-  BUILD: [
-    { src: '/assets/explanation-orpheus.svg', alt: 'Orpheus', width: 180, height: 180, position: { bottom: '-4.5rem', left: '-3rem' } }
-  ],
-  SHIP: [
-    { src: '/assets/explanation-coin.svg', alt: 'Coin', width: 180, height: 180, position: { bottom: '-4.5rem', left: '-4rem' } }
-  ],
-  EARN: [
-    { src: '/assets/explanation-arcade2.svg', alt: 'Arcade 2', width: 180, height: 180, position: { bottom: '-5rem', right: '-4rem' } }
-  ]
 };
 
 const sectionTitleBoxStyle = {
   backgroundColor: 'white',
   borderRadius: '2rem',
-  padding: '2rem 1rem',
+  padding: '1.25rem 3.5rem',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  minWidth: '800px'
+  flex: '0 1 auto',
+  minWidth: 0,
+  maxWidth: '100%'
 };
 
 const sectionTitleTextStyle = {
   textAlign: 'center' as const,
   margin: 0,
   color: '#142B70',
-  fontSize: '4rem',
+  fontSize: 'clamp(2.2rem, 4vw, 5rem)',
+  letterSpacing: '0.25rem',
   whiteSpace: 'nowrap' as const
 };
 
-const buttonStyle = {
+// The white banner straddles the navy/blue seam, so its wrapper paints both halves.
+const BANNER_SPLIT_BACKGROUND = 'linear-gradient(to bottom, #142B70 0 72%, #224CCA 72% 100%)';
+
+interface SectionBannerProps {
+  title: string;
+  left: { src: string; alt: string; width: number; height: number };
+  right: { src: string; alt: string; width: number; height: number };
+}
+
+const SectionBanner = ({ title, left, right }: SectionBannerProps) => (
+  <div className="section-title-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', padding: '0 1.5rem' }}>
+    <Image src={left.src} alt={left.alt} width={left.width} height={left.height} className="hide-mobile" style={{ flexShrink: 0 }} />
+    <div className="section-title-box" style={sectionTitleBoxStyle}>
+      <h2 className="section-title-text" style={sectionTitleTextStyle}>{title}</h2>
+    </div>
+    <Image src={right.src} alt={right.alt} width={right.width} height={right.height} className="hide-mobile" style={{ flexShrink: 0 }} />
+  </div>
+);
+
+const carouselButtonStyle = {
   backgroundColor: '#EE00A7',
   color: 'white',
-  padding: '0.75rem 1.5rem',
+  padding: '0.5rem 1.25rem',
   borderRadius: '0.5rem',
   textDecoration: 'none' as const,
-  fontSize: '2rem',
+  fontSize: '1.6rem',
   fontWeight: 'bold' as const,
   marginTop: 'auto',
-  marginBottom: '1rem',
-  boxShadow: '-8px 8px 0 #930B6A'
+  marginBottom: '0.5rem',
+  boxShadow: '-5px 5px 0 #930B6A'
 };
 
 export default function Explanation() {
@@ -603,21 +313,26 @@ export default function Explanation() {
     const carousel = carouselRef.current;
     if (!carousel) return;
 
-    const cardWidth = 380;
-    const gap = 32;
-    const totalCardWidth = cardWidth + gap;
-    const singleSetWidth = totalCardWidth * games.length;
-    const middleSetStart = singleSetWidth;
-    const middleSetEnd = singleSetWidth * 2;
+    // Three identical sets are rendered; measure one so the seamless wrap holds
+    // at any card size (they shrink on phones) rather than assuming desktop widths.
+    let singleSetWidth = 0;
+    const measure = () => {
+      const items = Array.from(carousel.children) as HTMLElement[];
+      const perSet = Math.floor(items.length / 3);
+      if (perSet < 1 || !items[perSet]) return;
+      singleSetWidth = items[perSet].offsetLeft - items[0].offsetLeft;
+      carousel.scrollLeft = singleSetWidth;
+    };
 
     const handleScroll = () => {
+      if (!singleSetWidth) return;
       const scrollLeft = carousel.scrollLeft;
-      
-      if (scrollLeft >= middleSetEnd - 10) {
+
+      if (scrollLeft >= singleSetWidth * 2 - 10) {
         carousel.style.scrollBehavior = 'auto';
         carousel.scrollLeft = scrollLeft - singleSetWidth;
         setTimeout(() => { carousel.style.scrollBehavior = ''; }, 0);
-      } else if (scrollLeft < middleSetStart) {
+      } else if (scrollLeft < singleSetWidth) {
         carousel.style.scrollBehavior = 'auto';
         carousel.scrollLeft = scrollLeft + singleSetWidth;
         setTimeout(() => { carousel.style.scrollBehavior = ''; }, 0);
@@ -637,96 +352,114 @@ export default function Explanation() {
 
     const handleMouseEnter = () => { isPausedRef.current = true; };
     const handleMouseLeave = () => { isPausedRef.current = false; };
+    // let a finger drag the strip without it scrolling away underneath
+    const handleTouchStart = () => { isPausedRef.current = true; };
+    const handleTouchEnd = () => { isPausedRef.current = false; };
 
     carousel.addEventListener('scroll', handleScroll, { passive: true });
     carousel.addEventListener('mouseenter', handleMouseEnter);
     carousel.addEventListener('mouseleave', handleMouseLeave);
-    
-    carousel.scrollLeft = middleSetStart;
+    carousel.addEventListener('touchstart', handleTouchStart, { passive: true });
+    carousel.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    measure();
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(carousel);
     startAutoScroll();
 
     return () => {
       carousel.removeEventListener('scroll', handleScroll);
       carousel.removeEventListener('mouseenter', handleMouseEnter);
       carousel.removeEventListener('mouseleave', handleMouseLeave);
+      carousel.removeEventListener('touchstart', handleTouchStart);
+      carousel.removeEventListener('touchend', handleTouchEnd);
+      resizeObserver.disconnect();
       if (autoScrollIntervalRef.current) {
         clearInterval(autoScrollIntervalRef.current);
       }
     };
   }, []);
 
-  const renderSectionHeader = (section: Section) => (
-    <div style={{ backgroundColor: '#224CCA', padding: '1rem 2rem', marginTop: '2rem', marginBottom: '0', paddingBottom: '0.5rem', position: 'relative' }}>
-      {section.title === 'NEVER MADE A GAME BEFORE?' && (
-        <Image
-          src="/assets/explanation-stars2.svg"
-          alt="Stars"
-          width={150}
-          height={150}
-          className="header-character hide-mobile"
-          style={{ position: 'absolute', right: '2rem', top: '-1rem' }}
-        />
-      )}
-      {section.title === 'HAVE SOME EXPERIENCE?' && (
-        <Image
-          src="/assets/explanation-stars1.svg"
-          alt="Stars"
-          width={150}
-          height={150}
-          className="header-character hide-mobile"
-          style={{ position: 'absolute', left: '2rem', top: '-1rem' }}
-        />
-      )}
-      <h2 style={{ textAlign: 'center', color: 'white', margin: 0, fontSize: '5rem' }}>{section.title}</h2>
-    </div>
-  );
-
   return (
     <section>
-      <div>
-        <div className="past-description" style={{ backgroundColor: '#224CCA', padding: '2rem 3rem', marginTop: '1rem', marginBottom: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem' }}>
-          <Image src="/assets/past-orpheusunity.svg" alt="Orpheus Unity" width={200} height={200} className="header-character hide-mobile" />
-          <p style={{ color: 'white', textAlign: 'center', margin: 0, fontSize: '3.5rem' }}>
-            Last summer, Jumpstart opened and received 68 games from 26 different countries, totalling 1900 hours of coding. Some include:
-          </p>
-          <Image src="/assets/past-orpheusconsole.svg" alt="Orpheus Console" width={200} height={200} className="header-character hide-mobile" />
+      {/* HOW DOES THIS WORK? */}
+      <div style={{ background: BANNER_SPLIT_BACKGROUND, paddingTop: '2.5rem' }}>
+        <SectionBanner
+          title="HOW DOES THIS WORK?"
+          left={{ src: '/assets/explanation-diamond.svg', alt: 'Diamond', width: 150, height: 136 }}
+          right={{ src: '/assets/explanation-arcade1.svg', alt: 'Arcade', width: 145, height: 145 }}
+        />
+      </div>
+
+      <div style={{ backgroundColor: '#224CCA', paddingTop: '2rem', paddingBottom: '2rem', position: 'relative', zIndex: 10 }}>
+        <div className="steps-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch', gap: '3rem', padding: '0 2rem', position: 'relative', zIndex: 100 }}>
+          {steps.map((step, index) => (
+            <StepColumn key={step.title} step={step} index={index} />
+          ))}
         </div>
 
-        <div 
+        <p className="prior-experience" style={{ color: 'white', textAlign: 'center', margin: 0, marginTop: '2.5rem', fontSize: '2.2rem' }}>
+          Have prior game dev experience? Submit{' '}
+          <a
+            href="https://submit.hackclub.com/jumpstart"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'white', textDecoration: 'underline' }}
+          >
+            here
+          </a>
+          !
+        </p>
+      </div>
+
+      {/* NEED INSPIRATION? */}
+      <div style={{ background: BANNER_SPLIT_BACKGROUND, paddingTop: '2.5rem' }}>
+        <SectionBanner
+          title="NEED INSPIRATION?"
+          left={{ src: '/assets/explanation-stars2.svg', alt: 'Stars', width: 130, height: 131 }}
+          right={{ src: '/assets/explanation-stars2.svg', alt: 'Stars', width: 130, height: 131 }}
+        />
+      </div>
+
+      <div style={{ backgroundColor: '#224CCA', paddingTop: '2rem', paddingBottom: '2rem' }}>
+        <p className="past-description" style={{ color: 'white', textAlign: 'center', margin: 0, padding: '0 3rem 1.5rem 3rem', fontSize: '3rem', lineHeight: '1.2' }}>
+          Check out some past games from Jumpstart participants:
+        </p>
+
+        <div
           ref={carouselRef}
-          className="hide-scrollbar"
-          style={{ 
-            display: 'flex', 
-            gap: '2rem', 
-            padding: '2rem 4rem 3rem 4rem',
+          className="hide-scrollbar games-carousel"
+          style={{
+            display: 'flex',
+            gap: '1.5rem',
+            padding: '1.5rem 3rem',
             backgroundColor: '#101E45',
             overflowX: 'auto',
             scrollBehavior: 'auto',
             scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            marginTop: '0'
+            msOverflowStyle: 'none'
           } as React.CSSProperties}
         >
           {[...games, ...games, ...games].map((game, index) => {
             const setIndex = Math.floor(index / games.length);
             const isLastInSet = (index + 1) % games.length === 0;
-            
+
             return (
               <React.Fragment key={`${game.title}-${index}`}>
-                <div className="game-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '380px', flexShrink: 0, border: '2px solid white', borderRadius: '1rem', padding: '0.75rem' }}>
-                  <h3 style={{ color: 'white', fontSize: '3rem', marginBottom: '0.5rem', textAlign: 'center', wordWrap: 'break-word' }}>{game.title}</h3>
-                  <Image src={game.image} alt={game.alt} width={320} height={150} unoptimized={game.image.endsWith('.gif')} style={{ marginBottom: '0.5rem', borderRadius: '0.5rem', width: '320px', height: '180px', objectFit: 'cover' }} />
-                  <p style={{ color: 'white', fontSize: '1.8rem', textAlign: 'center', marginBottom: '0.25rem', wordWrap: 'break-word' }}>{game.creator}</p>
-                  <p style={{ color: 'white', fontSize: '1.6rem', textAlign: 'center', marginBottom: '0.5rem', wordWrap: 'break-word' }}>{game.description}</p>
-                  <a href={game.link} target="_blank" rel="noopener noreferrer" className="pink-button" style={buttonStyle}>
+                <div className="game-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px', flexShrink: 0, border: '2px solid white', borderRadius: '1rem', padding: '0.75rem' }}>
+                  <h3 style={{ color: 'white', fontSize: '2.2rem', marginBottom: '0.4rem', textAlign: 'center', wordWrap: 'break-word' }}>{game.title}</h3>
+                  <Image src={game.image} alt={game.alt} width={260} height={146} style={{ marginBottom: '0.5rem', borderRadius: '0.5rem', width: '260px', height: '146px', objectFit: 'cover' }} />
+                  <p style={{ color: 'white', fontSize: '1.4rem', textAlign: 'center', marginBottom: '0.25rem', wordWrap: 'break-word' }}>{game.creator}</p>
+                  <p style={{ color: 'white', fontSize: '1.3rem', textAlign: 'center', marginBottom: '0.5rem', wordWrap: 'break-word' }}>{game.description}</p>
+                  <a href={game.link} target="_blank" rel="noopener noreferrer" className="pink-button" style={carouselButtonStyle}>
                     PLAY HERE
                   </a>
                 </div>
                 {isLastInSet && (
-                  <div key={`all-games-${setIndex}`} className="game-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '380px', flexShrink: 0, border: '2px solid white', borderRadius: '1rem', padding: '0.75rem', minHeight: '600px' }}>
-                    <h3 style={{ color: 'white', fontSize: '3rem', marginBottom: '0.5rem', textAlign: 'center', wordWrap: 'break-word' }}>ALL GAMES</h3>
-                    <Image src="/assets/v2gamse.gif" alt="V2 Games" width={320} height={250} unoptimized={true} style={{ marginBottom: '0.5rem', borderRadius: '0.5rem', width: '320px', height: '250px', objectFit: 'cover' }} />
-                    <a href="http://v2.jumpstart.hackclub.com/games/index.html" target="_blank" rel="noopener noreferrer" className="pink-button" style={{ ...buttonStyle, width: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', padding: '1rem 4rem', marginTop: 'auto', marginBottom: '2rem' }}>
+                  <div key={`all-games-${setIndex}`} className="game-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px', flexShrink: 0, border: '2px solid white', borderRadius: '1rem', padding: '0.75rem' }}>
+                    <h3 style={{ color: 'white', fontSize: '2.2rem', marginBottom: '0.4rem', textAlign: 'center', wordWrap: 'break-word' }}>ALL GAMES</h3>
+                    <Image src="/assets/v2gamse.png" alt="V2 Games" width={260} height={146} style={{ marginBottom: '0.5rem', borderRadius: '0.5rem', width: '260px', height: '146px', objectFit: 'cover' }} />
+                    <a href="http://v2.jumpstart.hackclub.com/games/index.html" target="_blank" rel="noopener noreferrer" className="pink-button" style={{ ...carouselButtonStyle, width: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem 2rem' }}>
                       PLAY HERE
                     </a>
                   </div>
@@ -736,52 +469,9 @@ export default function Explanation() {
           })}
         </div>
 
-        <div style={{ backgroundColor: '#224CCA', height: '2rem', width: '100%' }}></div>
-
-        <div className="section-title-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', padding: '0.5rem 3rem', marginTop: '3rem' }}>
-          <Image src="/assets/explanation-diamond.svg" alt="Diamond" width={200} height={200} className="header-character hide-mobile" />
-          <div className="section-title-box" style={sectionTitleBoxStyle}>
-            <h2 className="section-title-text" style={{ ...sectionTitleTextStyle, lineHeight: '0.9', whiteSpace: 'normal' }}>
-              JUMPSTART V3 IS NOW OPEN FOR<br />
-              <span className="you-wiggle" style={{ fontSize: '2.8em' }}>YOU</span><br />
-              TO BUILD A GAME OF YOUR OWN!
-            </h2>
-          </div>
-          <Image src="/assets/explanation-arcade1.svg" alt="Arcade" width={200} height={200} className="header-character hide-mobile" />
-        </div>
-
-        {renderSectionHeader(beginnerSection)}
-        
-        <div className="steps-container beginner-steps-container" style={{ backgroundColor: '#224CCA', display: 'flex', justifyContent: 'center', gap: '3rem', padding: '0rem 8rem 2rem 8rem', marginTop: '0', position: 'relative', zIndex: 10000 }}>
-          {beginnerSection.steps.map((step, index) => (
-            <StepColumn
-              key={step.title}
-              step={step}
-              index={index}
-              isBeginner={true}
-              decorations={beginnerDecorations[step.title] || []}
-              rectangleWidth={325}
-            />
-          ))}
-        </div>
-
-        {renderSectionHeader(experiencedSection)}
-        
-        <div className="steps-container experienced-steps-container" style={{ backgroundColor: '#224CCA', display: 'flex', justifyContent: 'center', gap: '3rem', padding: '0rem 8rem 2rem 8rem', marginTop: '0', position: 'relative', zIndex: 1 }}>
-          {experiencedSection.steps.map((step, index) => (
-            <StepColumn
-              key={step.title}
-              step={step}
-              index={index}
-              isBeginner={false}
-              decorations={experiencedDecorations[step.title] || []}
-              rectangleWidth={280}
-            />
-          ))}
-        </div>
-
-        <div style={{ backgroundColor: '#142B70', height: '2rem', width: '100%' }}></div>
       </div>
+
+      <div style={{ backgroundColor: '#142B70', height: '2.5rem', width: '100%' }}></div>
     </section>
   );
 }

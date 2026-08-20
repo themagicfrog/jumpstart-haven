@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: 'Jersey 15';
-  src: url('/fonts/Jersey15-Regular.ttf') format('truetype');
+  src: url('/assets/fonts/Jersey15-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -10,6 +10,7 @@
 
 html,
 body {
+  overflow-x: hidden;
   background-color: #142B70;
   margin: 0;
   padding: 0;
@@ -60,8 +61,7 @@ h1, h2, h3, h4, h5, h6, p {
 
 .step-title-image,
 .step-title-text-wrapper,
-.step-rectangle,
-.step-decoration-image {
+.step-rectangle {
   transition: transform 0.3s ease !important;
   transform-origin: center center;
 }
@@ -91,23 +91,12 @@ h1, h2, h3, h4, h5, h6, p {
   font-size: 2.02rem !important;
 }
 
-.step-column:hover .step-decoration-image {
-  transform: scale(1.15) !important;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-10px) scale(1); }
-}
-
-.title-float {
-  animation: float 3s ease-in-out infinite;
+.hero-title {
   transition: transform 0.4s ease-in-out;
   transform-origin: center center;
 }
 
-.title-float:hover {
-  animation: none;
+.hero-title:hover {
   transform: translateY(-5px) scale(1.05) !important;
 }
 
@@ -179,30 +168,6 @@ h1, h2, h3, h4, h5, h6, p {
   transform: scale(1.03) !important;
 }
 
-.section-title-text {
-  transition: font-size 0.3s ease !important;
-}
-
-.section-title-box:hover .section-title-text {
-  font-size: 4.3rem !important;
-}
-
-.hackclub-link {
-  display: inline-block;
-  transition: transform 0.3s ease;
-  transform-origin: center center;
-  cursor: pointer;
-}
-
-.hackclub-link:hover {
-  transform: scale(1.1) !important;
-}
-
-.hackclub-link img {
-  display: block;
-  pointer-events: none;
-}
-
 .game-card {
   transition: transform 0.3s ease;
   cursor: pointer;
@@ -247,51 +212,55 @@ h1, h2, h3, h4, h5, h6, p {
     display: none !important;
   }
 
+  /* --- hero --- */
   .header-content {
-    padding-top: 6rem !important;
+    padding-top: 1.5rem !important;
+    padding-bottom: 0 !important;
   }
 
   .header-title-container {
-    margin-top: 2rem !important;
+    max-width: 88% !important;
+    margin-top: 0 !important;
   }
 
   .header-text-container {
-    margin-top: -2rem !important;
+    margin-top: -0.5rem !important;
+    padding: 0 1rem !important;
   }
 
   .header-triangle-container {
-    margin-top: 3rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
   }
 
-  .section-title-text {
-    font-size: 1.5rem !important;
-    line-height: 1.2 !important;
-  }
-
+  /* --- section banners --- */
   .section-title-container {
-    padding: 0.5rem 1rem !important;
+    padding: 0 1rem !important;
   }
 
   .section-title-box {
-    min-width: auto !important;
-    padding: 1rem 0.75rem !important;
+    padding: 0.9rem 1.25rem !important;
     width: 100% !important;
-    max-width: 90vw !important;
+    border-radius: 1.25rem !important;
   }
 
-  .you-wiggle {
-    font-size: 1.5em !important;
+  .section-title-text {
+    font-size: 1.9rem !important;
+    letter-spacing: 0.1rem !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
   }
 
   h2 {
     font-size: 2.5rem !important;
   }
 
+  /* --- steps --- */
   .steps-container {
     flex-direction: column !important;
     align-items: center !important;
-    gap: 4rem !important;
-    padding: 2rem 1rem !important;
+    gap: 1.5rem !important;
+    padding: 0 1rem !important;
   }
 
   .steps-container .step-column {
@@ -299,80 +268,106 @@ h1, h2, h3, h4, h5, h6, p {
     max-width: 400px;
   }
 
-  .mobile-experience-image {
-    right: -4rem !important;
+  .steps-container .step-rectangle {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    padding: 3rem 1rem 1.25rem 1rem !important;
   }
 
+  .step-rectangle-text {
+    font-size: 1.7rem !important;
+  }
+
+  .step-column,
+  .step-column:hover .step-title-image,
+  .step-column:hover .step-rectangle {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .prior-experience {
+    font-size: 1.6rem !important;
+    padding: 0 1rem !important;
+    margin-top: 1.5rem !important;
+  }
+
+  /* --- inspiration --- */
   .past-description {
-    padding: 1.5rem 1rem !important;
-    flex-direction: column !important;
-    gap: 1rem !important;
-  }
-
-  .past-description p {
-    font-size: 1.5rem !important;
-  }
-
-  .see-all-button {
+    padding: 0 1rem 1rem 1rem !important;
     font-size: 1.8rem !important;
-    padding: 0.75rem 1rem !important;
-    text-align: center !important;
-    white-space: nowrap !important;
   }
 
-  .start-section {
-    padding: 2rem 1rem !important;
+  .hero-band {
+    height: 2.5rem !important;
   }
 
-  .start-title {
-    font-size: 2.5rem !important;
-    margin-bottom: 1rem !important;
-  }
-
-  .start-button-container {
-    margin-top: 2rem !important;
-    gap: 0.5rem !important;
-  }
-
-  .start-button-container .pink-button {
-    font-size: 3rem !important;
-    padding: 0.5rem 2rem !important;
-    letter-spacing: 0.05em !important;
+  .games-carousel {
+    gap: 1rem !important;
+    padding: 1.25rem 1rem !important;
   }
 
   .game-card {
-    width: 90vw !important;
-    max-width: 350px !important;
-    min-height: auto !important;
+    width: 72vw !important;
+    max-width: 270px !important;
+    min-height: 0 !important;
   }
 
   .game-card h3 {
-    font-size: 2rem !important;
+    font-size: 1.8rem !important;
   }
 
   .game-card img {
     width: 100% !important;
     height: auto !important;
-    max-height: 200px !important;
+    aspect-ratio: 16 / 9 !important;
   }
 
   .game-card .pink-button {
-    font-size: 1.5rem !important;
-    padding: 0.75rem 2rem !important;
+    font-size: 1.4rem !important;
+    padding: 0.5rem 1.25rem !important;
+    box-shadow: -4px 4px 0 #930B6A !important;
   }
 
+  /* --- start + footer --- */
+  .start-section {
+    padding: 1.5rem 1rem !important;
+  }
+
+  .start-title {
+    font-size: 2.5rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .start-button-container {
+    gap: 0.5rem !important;
+  }
+
+  .start-button-container .pink-button {
+    font-size: 3rem !important;
+    padding: 0.4rem 2.5rem !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .footer-content {
+    padding: 2rem 1rem !important;
+  }
+
+  .footer-content p {
+    font-size: 1.4rem !important;
+  }
+
+  /* --- dropdowns --- */
   .details-dropdown-button {
     font-size: 1.5rem !important;
     padding: 0.6rem 1.2rem !important;
+    width: 100% !important;
+    max-width: 300px !important;
   }
 
   .details-dropdown-content {
     padding: 0.75rem !important;
     max-width: 90vw !important;
-  }
-
-  .details-dropdown-content p {
-    font-size: 1.3rem !important;
   }
 
   .details-dropdown-content a {
@@ -382,11 +377,6 @@ h1, h2, h3, h4, h5, h6, p {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-  }
-
-  .details-dropdown-button {
-    width: 100% !important;
-    max-width: 300px !important;
   }
 
   .form-button {
