@@ -38,7 +38,7 @@ const steps: Step[] = [
     action: {
       kind: 'link',
       label: 'FORM',
-      href: 'https://forms.hackclub.com/jumpstart-beginner',
+      href: '#',
     },
   },
   {
@@ -171,8 +171,7 @@ const StepColumn = ({ step, index }: { step: Step; index: number }) => {
         {step.action.kind === 'link' && (
           <a
             href={step.action.href}
-            target="_blank"
-            rel="noopener noreferrer"
+            {...(step.action.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             className="form-button"
             style={{ ...stepButtonStyle, display: 'inline-flex', marginTop: 'auto' }}
             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
@@ -401,9 +400,7 @@ export default function Explanation() {
         <p className="prior-experience" style={{ color: 'white', textAlign: 'center', margin: 0, marginTop: '2.5rem', fontSize: '2.2rem' }}>
           Have prior game dev experience? Submit{' '}
           <a
-            href="https://submit.hackclub.com/jumpstart"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
             style={{ color: 'white', textDecoration: 'underline' }}
           >
             here
