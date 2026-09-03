@@ -38,7 +38,7 @@ const steps: Step[] = [
     action: {
       kind: 'link',
       label: 'FORM',
-      href: '#',
+      href: 'https://forms.hackclub.com/jumpstart-haven',
     },
   },
   {
@@ -400,7 +400,7 @@ export default function Explanation() {
         <p className="prior-experience" style={{ color: 'white', textAlign: 'center', margin: 0, marginTop: '2.5rem', fontSize: '2.2rem' }}>
           Have prior game dev experience? Submit{' '}
           <a
-            href="#"
+            href="https://forms.hackclub.com/jumpstart-haven"
             style={{ color: 'white', textDecoration: 'underline' }}
           >
             here
