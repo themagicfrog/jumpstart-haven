@@ -29,6 +29,7 @@ const steps: Step[] = [
         { label: 'Written Guide', href: 'https://jams.hackclub.com/jam/godot-platformer' },
         { label: 'Video Tutorial', href: 'https://www.youtube.com/watch?v=G7iZHazD4wo' },
         { label: 'Slideshow Presentation', href: 'https://www.figma.com/slides/j0xld5JL1PLVmndZPV6YSi/Godot-Platformer-Guide--Jumpstart-?node-id=1-42&t=YvoFRsTHrLei0iRJ-1' },
+        { label: 'Hackatime Setup (important)', href: 'https://hackatime.hackclub.com/docs/editors/godot' },
       ],
     },
   },
