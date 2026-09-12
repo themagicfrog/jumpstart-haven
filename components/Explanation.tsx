@@ -15,7 +15,7 @@ type StepAction =
 interface Step {
   title: string;
   description: string;
-  action: StepAction;
+  action?: StepAction;
 }
 
 const steps: Step[] = [
@@ -44,13 +44,6 @@ const steps: Step[] = [
   {
     title: 'RUN',
     description: 'Once approved after about a week, you will run your Haven event! Have fun!!',
-    action: {
-      kind: 'dropdown',
-      label: 'DETAILS',
-      links: [
-        { label: 'Details in Slack', href: 'https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A60JA00KD' },
-      ],
-    },
   },
 ];
 
@@ -168,7 +161,7 @@ const StepColumn = ({ step, index }: { step: Step; index: number }) => {
           {step.description}
         </p>
 
-        {step.action.kind === 'link' && (
+        {step.action?.kind === 'link' && (
           <a
             href={step.action.href}
             {...(step.action.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
@@ -181,7 +174,7 @@ const StepColumn = ({ step, index }: { step: Step; index: number }) => {
           </a>
         )}
 
-        {step.action.kind === 'dropdown' && (
+        {step.action?.kind === 'dropdown' && (
           <div
             ref={dropdownRef}
             style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'auto', zIndex: 10000 }}
