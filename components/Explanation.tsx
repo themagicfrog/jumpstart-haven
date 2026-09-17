@@ -390,17 +390,6 @@ export default function Explanation() {
             <StepColumn key={step.title} step={step} index={index} />
           ))}
         </div>
-
-        <p className="prior-experience" style={{ color: 'white', textAlign: 'center', margin: 0, marginTop: '2.5rem', fontSize: '2.2rem' }}>
-          Have prior game dev experience? Submit{' '}
-          <a
-            href="https://forms.hackclub.com/jumpstart-haven"
-            style={{ color: 'white', textDecoration: 'underline' }}
-          >
-            here
-          </a>
-          !
-        </p>
       </div>
 
       {/* NEED INSPIRATION? */}
